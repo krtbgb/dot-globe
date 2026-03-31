@@ -79,11 +79,12 @@ const FRAGMENT_SHADER = `
     vec2 center = gl_PointCoord - vec2(0.5);
     float dist = length(center);
 
-    float core = 1.0 - smoothstep(0.0, 0.2, dist);
-    float glow = 1.0 - smoothstep(0.1, 0.5, dist);
-    float alpha = mix(glow * 0.6, 1.0, core);
+    float core = 1.0 - smoothstep(0.0, 0.15, dist);
+    float glow = 1.0 - smoothstep(0.05, 0.45, dist);
+    float alpha = mix(glow * 0.8, 1.0, core);
 
-    vec3 finalColor = mix(uColor, uGlowColor, core * 0.5);
+    vec3 finalColor = mix(uColor, uGlowColor, core * 0.7);
+    finalColor = min(finalColor * 1.3, vec3(1.0));
     float finalOpacity = alpha * vOpacity * uOpacity * edgeFade * vParticleOpacity;
 
     gl_FragColor = vec4(finalColor, finalOpacity);
@@ -288,7 +289,7 @@ export function DotGlobeMax(props: DotGlobeMaxProps) {
         vertexShader: VERTEX_SHADER,
         fragmentShader: FRAGMENT_SHADER,
         transparent: true,
-        blending: THREE.AdditiveBlending,
+        blending: THREE.NormalBlending,
         depthWrite: false,
       });
 
@@ -311,7 +312,7 @@ export function DotGlobeMax(props: DotGlobeMaxProps) {
           vertexShader: ATMOSPHERE_VERTEX,
           fragmentShader: ATMOSPHERE_FRAGMENT,
           transparent: true,
-          blending: THREE.AdditiveBlending,
+          blending: THREE.NormalBlending,
           side: THREE.BackSide,
           depthWrite: false,
         });
