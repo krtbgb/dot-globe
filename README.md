@@ -101,7 +101,18 @@ Or the min variant:
 <iframe src="https://kurt.xyz/dot-globe/embed-min" style="width: 100%; height: 100vh; border: none;"></iframe>
 ```
 
-Customize with URL params: `?dotSize=3&rotationSpeed=0.002&atmosphere=false`
+Customize with URL params:
+
+```html
+<!-- Brighter, faster pulses -->
+<iframe src="https://kurt.xyz/dot-globe/embed-min?minBrightness=0.5&pulseSpeed=2" style="width: 100%; height: 100vh; border: none;"></iframe>
+
+<!-- Detailed globe, no atmosphere -->
+<iframe src="https://kurt.xyz/dot-globe/embed?dotSize=3&gridStep=0.5&atmosphere=false" style="width: 100%; height: 100vh; border: none;"></iframe>
+
+<!-- Slow rotation, custom tilt -->
+<iframe src="https://kurt.xyz/dot-globe/embed?rotationSpeed=0.0002&tiltX=15&tiltZ=-10" style="width: 100%; height: 100vh; border: none;"></iframe>
+```
 
 ## License
 
