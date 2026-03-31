@@ -45,7 +45,7 @@ import { DotGlobe } from "dot-globe"
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `gridStep` | `number` | `0.9` | Grid step in degrees — smaller = more dots |
-| `dotSize` | `number` | `2.0` | Base dot size multiplier |
+| `dotSize` | `number` | `0.6` | Base dot size multiplier |
 | `radius` | `number` | `7` | Globe radius in scene units |
 | `tilt` | `[number, number]` | `[35, -23.5]` | Axis tilt in degrees [x, z] |
 | `rotationSpeed` | `number` | `0.0006` | Rotation speed (radians/frame) |
@@ -102,6 +102,7 @@ import { DotGlobeMin } from "dot-globe"
 | `maxBrightness` | `number` | `1.0` | Maximum dot brightness (0–1) |
 | `pulseSpeed` | `number` | `1.0` | Pulse fade speed — higher = faster |
 | `pulseFrequency` | `number` | `1.0` | Pulse rate — higher = more frequent |
+| `dotSize` | `number` | `1.0` | Base dot size |
 | `dotColor` | `string` | `"#ffffff"` | Dot color as CSS hex string |
 | `tilt` | `[number, number]` | `[0, 0]` | Axis tilt in degrees [x, z] |
 | `rotationSpeed` | `number` | `0.0008` | Rotation speed (radians/frame) |

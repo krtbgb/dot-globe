@@ -57,7 +57,7 @@ export interface DotGlobeProps {
 export const DEFAULT_CONFIG: Required<Omit<DotGlobeProps, 'className' | 'style' | 'width' | 'height'>> = {
   nightImageUrl: '',
   gridStep: 0.9,
-  dotSize: 2.0,
+  dotSize: 0.6,
   radius: 7,
   tilt: [35, -23.5],
   rotationSpeed: 0.0006,

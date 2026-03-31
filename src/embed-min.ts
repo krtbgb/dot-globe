@@ -36,6 +36,7 @@ const CONFIG = {
 const VERTEX = `
   precision highp float;
   uniform float uTime;
+  uniform float uDotSize;
   uniform float uMinBrightness;
   uniform float uMaxBrightness;
   uniform float uPulseSpeed;
@@ -92,7 +93,7 @@ const VERTEX = `
 
     float backBoost = vFacing < 0.0 ? 1.3 : 1.0;
     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = 1.0 * backBoost * (200.0 / -mvPosition.z);
+    gl_PointSize = uDotSize * backBoost * (200.0 / -mvPosition.z);
     gl_Position = projectionMatrix * mvPosition;
   }
 `;
@@ -133,6 +134,8 @@ function getLuminance(data: Uint8ClampedArray, w: number, h: number, lat: number
 interface EmbedMinOptions {
   container?: string | HTMLElement;
   nightImageUrl?: string;
+  /** Base dot size. Default: 1.0 */
+  dotSize?: number;
   /** Minimum dot brightness (0-1). Default: 0.35 */
   minBrightness?: number;
   /** Maximum dot brightness (0-1). Default: 1.0 */
@@ -154,7 +157,7 @@ interface EmbedMinOptions {
 }
 
 function createDotGlobeMin(options: EmbedMinOptions = {}) {
-  const { container: containerOpt, nightImageUrl = EARTH_NIGHT_BASE64, minBrightness = 0.35, maxBrightness = 1.0, pulseSpeed = 1.0, pulseFrequency = 1.0, backgroundColor = 0x000000, backgroundOpacity = 1.0, dotColor = "#ffffff", tilt = [0, 0], rotationSpeed = 0.0008 } = options;
+  const { container: containerOpt, nightImageUrl = EARTH_NIGHT_BASE64, dotSize = 1.0, minBrightness = 0.35, maxBrightness = 1.0, pulseSpeed = 1.0, pulseFrequency = 1.0, backgroundColor = 0x000000, backgroundOpacity = 1.0, dotColor = "#ffffff", tilt = [0, 0], rotationSpeed = 0.0008 } = options;
 
   let el: HTMLElement;
   if (typeof containerOpt === "string") {
@@ -263,6 +266,7 @@ function createDotGlobeMin(options: EmbedMinOptions = {}) {
     material = new THREE.ShaderMaterial({
       uniforms: {
         uTime: { value: 0 },
+        uDotSize: { value: dotSize },
         uMinBrightness: { value: minBrightness },
         uMaxBrightness: { value: maxBrightness },
         uPulseSpeed: { value: pulseSpeed },
