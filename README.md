@@ -38,6 +38,7 @@ import { DotGlobe } from "dot-globe"
 | `chars` | `string` | `"."` |
 | `atmosphere` | `boolean` | `true` |
 | `backgroundColor` | `number` | `0x000000` |
+| `backgroundOpacity` | `number` | `1.0` |
 | `className` | `string` | — |
 | `style` | `CSSProperties` | — |
 | `width` | `string \| number` | `"100%"` |
@@ -86,6 +87,8 @@ import { DotGlobeMin } from "dot-globe"
 | `backgroundColor` | `number` | `0x000000` | Background color as hex number |
 | `backgroundOpacity` | `number` | `1.0` | Background opacity (0 = transparent) |
 | `dotColor` | `string` | `"#ffffff"` | Dot color as CSS hex string |
+| `tilt` | `[number, number]` | `[0, 0]` | Axis tilt in degrees [x, z] |
+| `rotationSpeed` | `number` | `0.0008` | Rotation speed (radians/frame) |
 | `nightImageUrl` | `string` | bundled | Custom night lights texture URL |
 | `className` | `string` | — | Container class name |
 | `style` | `CSSProperties` | — | Container inline styles |

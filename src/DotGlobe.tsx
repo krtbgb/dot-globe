@@ -19,6 +19,7 @@ export function DotGlobe(props: DotGlobeProps) {
     luminanceThreshold = DEFAULT_CONFIG.luminanceThreshold,
     chars = DEFAULT_CONFIG.chars,
     backgroundColor = DEFAULT_CONFIG.backgroundColor,
+    backgroundOpacity = DEFAULT_CONFIG.backgroundOpacity,
     atmosphere = DEFAULT_CONFIG.atmosphere,
     atmosphereOpacity = DEFAULT_CONFIG.atmosphereOpacity,
     timeOffset = DEFAULT_CONFIG.timeOffset,
@@ -38,7 +39,11 @@ export function DotGlobe(props: DotGlobeProps) {
     const container = containerRef.current;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(backgroundColor);
+    if (backgroundOpacity < 1) {
+      scene.background = null;
+    } else {
+      scene.background = new THREE.Color(backgroundColor);
+    }
 
     const rect = container.getBoundingClientRect();
     const w = rect.width || window.innerWidth;
@@ -48,7 +53,11 @@ export function DotGlobe(props: DotGlobeProps) {
     camera.position.set(0, 0, cameraDistance);
     camera.lookAt(0, 0, 0);
 
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    const needsAlpha = backgroundOpacity < 1;
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: needsAlpha });
+    if (needsAlpha) {
+      renderer.setClearColor(new THREE.Color(backgroundColor), backgroundOpacity);
+    }
     renderer.setSize(w, h);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
@@ -162,7 +171,7 @@ export function DotGlobe(props: DotGlobeProps) {
     };
   }, [
     nightImageUrl, gridStep, dotSize, radius, tilt, rotationSpeed,
-    cameraDistance, luminanceThreshold, chars, backgroundColor,
+    cameraDistance, luminanceThreshold, chars, backgroundColor, backgroundOpacity,
     atmosphere, atmosphereOpacity, timeOffset,
   ]);
 

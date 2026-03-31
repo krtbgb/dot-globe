@@ -14,6 +14,7 @@ interface EmbedOptions {
   luminanceThreshold?: number;
   chars?: string;
   backgroundColor?: number;
+  backgroundOpacity?: number;
   atmosphere?: boolean;
   atmosphereOpacity?: number;
   timeOffset?: number;
@@ -32,6 +33,7 @@ function createDotGlobe(options: EmbedOptions = {}) {
     luminanceThreshold = 0.08,
     chars = ".",
     backgroundColor = 0x000000,
+    backgroundOpacity = 1.0,
     atmosphere = true,
     atmosphereOpacity = 0.02,
     timeOffset = 12,
@@ -63,13 +65,21 @@ function createDotGlobe(options: EmbedOptions = {}) {
   const h = rect.height || window.innerHeight;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(backgroundColor);
+  if (backgroundOpacity < 1) {
+    scene.background = null;
+  } else {
+    scene.background = new THREE.Color(backgroundColor);
+  }
 
   const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 1000);
   camera.position.set(0, 0, cameraDistance);
   camera.lookAt(0, 0, 0);
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  const needsAlpha = backgroundOpacity < 1;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: needsAlpha });
+  if (needsAlpha) {
+    renderer.setClearColor(new THREE.Color(backgroundColor), backgroundOpacity);
+  }
   renderer.setSize(w, h);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 

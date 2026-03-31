@@ -123,10 +123,14 @@ interface EmbedMinOptions {
   backgroundOpacity?: number;
   /** Dot color as CSS hex string. Default: "#ffffff" */
   dotColor?: string;
+  /** Axis tilt in degrees [x, z]. Default: [0, 0] */
+  tilt?: [number, number];
+  /** Rotation speed (radians per frame). Default: 0.0008 */
+  rotationSpeed?: number;
 }
 
 function createDotGlobeMin(options: EmbedMinOptions = {}) {
-  const { container: containerOpt, nightImageUrl = EARTH_NIGHT_BASE64, minBrightness = 0.35, maxBrightness = 1.0, pulseSpeed = 1.0, pulseFrequency = 1.0, backgroundColor = 0x000000, backgroundOpacity = 1.0, dotColor = "#ffffff" } = options;
+  const { container: containerOpt, nightImageUrl = EARTH_NIGHT_BASE64, minBrightness = 0.35, maxBrightness = 1.0, pulseSpeed = 1.0, pulseFrequency = 1.0, backgroundColor = 0x000000, backgroundOpacity = 1.0, dotColor = "#ffffff", tilt = [0, 0], rotationSpeed = 0.0008 } = options;
 
   let el: HTMLElement;
   if (typeof containerOpt === "string") {
@@ -248,7 +252,12 @@ function createDotGlobeMin(options: EmbedMinOptions = {}) {
       depthWrite: false,
     });
 
-    scene.add(new THREE.Points(geometry, material));
+    const particles = new THREE.Points(geometry, material);
+    const pivot = new THREE.Group();
+    pivot.rotation.x = THREE.MathUtils.degToRad(tilt[0]);
+    pivot.rotation.z = THREE.MathUtils.degToRad(tilt[1]);
+    pivot.add(particles);
+    scene.add(pivot);
   };
 
   const clock = new THREE.Clock();
@@ -258,8 +267,9 @@ function createDotGlobeMin(options: EmbedMinOptions = {}) {
   const animate = () => {
     animId = requestAnimationFrame(animate);
     const t = clock.getElapsedTime();
-    if (scene.children[0] instanceof THREE.Points) {
-      scene.children[0].rotation.y += CONFIG.rotationSpeedY;
+    const pivot = scene.children[0];
+    if (pivot && pivot.children[0] instanceof THREE.Points) {
+      pivot.children[0].rotation.y += rotationSpeed;
     }
     if (material) {
       material.uniforms.uTime.value = t;

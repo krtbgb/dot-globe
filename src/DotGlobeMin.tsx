@@ -136,10 +136,14 @@ export interface DotGlobeMinProps {
   backgroundOpacity?: number;
   /** Dot color as CSS hex string. Default: "#ffffff" */
   dotColor?: string;
+  /** Axis tilt in degrees [x, z]. Default: [0, 0] */
+  tilt?: [number, number];
+  /** Rotation speed (radians per frame). Default: 0.0008 */
+  rotationSpeed?: number;
 }
 
 export function DotGlobeMin(props: DotGlobeMinProps) {
-  const { className, style, width = "100%", height = "100%", nightImageUrl, minBrightness = 0.35, maxBrightness = 1.0, pulseSpeed = 1.0, pulseFrequency = 1.0, backgroundColor = 0x000000, backgroundOpacity = 1.0, dotColor = "#ffffff" } = props;
+  const { className, style, width = "100%", height = "100%", nightImageUrl, minBrightness = 0.35, maxBrightness = 1.0, pulseSpeed = 1.0, pulseFrequency = 1.0, backgroundColor = 0x000000, backgroundOpacity = 1.0, dotColor = "#ffffff", tilt = [0, 0], rotationSpeed = 0.0008 } = props;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -258,7 +262,11 @@ export function DotGlobeMin(props: DotGlobeMinProps) {
       });
 
       const particles = new THREE.Points(geometry, material);
-      scene.add(particles);
+      const pivot = new THREE.Group();
+      pivot.rotation.x = THREE.MathUtils.degToRad(tilt[0]);
+      pivot.rotation.z = THREE.MathUtils.degToRad(tilt[1]);
+      pivot.add(particles);
+      scene.add(pivot);
     };
 
     const clock = new THREE.Clock();
@@ -269,8 +277,9 @@ export function DotGlobeMin(props: DotGlobeMinProps) {
       animId = requestAnimationFrame(animate);
       const t = clock.getElapsedTime();
 
-      if (scene.children[0] instanceof THREE.Points) {
-        scene.children[0].rotation.y += CONFIG.rotationSpeedY;
+      const pivot = scene.children[0];
+      if (pivot && pivot.children[0] instanceof THREE.Points) {
+        pivot.children[0].rotation.y += rotationSpeed;
       }
 
       if (material) {
