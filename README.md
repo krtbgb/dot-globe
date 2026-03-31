@@ -3,13 +3,20 @@
 [![npm version](https://img.shields.io/npm/v/dot-globe.svg)](https://www.npmjs.com/package/dot-globe)
 [![npm downloads](https://img.shields.io/npm/dm/dot-globe.svg)](https://www.npmjs.com/package/dot-globe)
 [![CI](https://github.com/krtbgb/dot-globe/actions/workflows/ci.yml/badge.svg)](https://github.com/krtbgb/dot-globe/actions/workflows/ci.yml)
-[![bundle size](https://img.shields.io/bundlephobia/minzip/dot-globe)](https://bundlephobia.com/package/dot-globe)
 [![license](https://img.shields.io/npm/l/dot-globe.svg)](https://github.com/krtbgb/dot-globe/blob/main/LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-ready-blue.svg)](https://www.npmjs.com/package/dot-globe)
 
 Minimal 3D dot globe for React, built with Three.js and NASA Black Marble night lights data. Zero config, one import.
 
-**[Live Demo](https://kurt.xyz/dot-globe)**
+<p align="center">
+  <a href="https://kurt.xyz/dot-globe">
+    <img src="https://raw.githubusercontent.com/krtbgb/dot-globe/main/preview.gif" alt="dot-globe preview" width="480" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://kurt.xyz/dot-globe"><strong>Live Demo</strong></a>
+</p>
 
 ## Install
 
