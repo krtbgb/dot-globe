@@ -48,21 +48,19 @@ export const PARTICLE_VERTEX = `
 
 export const PARTICLE_FRAGMENT = `
   precision highp float;
-  uniform sampler2D uCharTex;
-  uniform float uCharCount;
   uniform float uTime;
   varying float vFacing;
   varying float vLuminance;
   varying float vShimmer;
-  varying float vCharIndex;
   varying vec3 vPosition;
 
   void main() {
     float edge = step(0.0, vFacing) * smoothstep(0.0, 0.4, vFacing);
 
-    vec2 uv = gl_PointCoord;
-    uv.x = (uv.x + vCharIndex) / uCharCount;
-    vec4 texColor = texture2D(uCharTex, uv);
+    vec2 pc = gl_PointCoord - vec2(0.5);
+    float d = length(pc);
+    float circle = 1.0 - step(0.25, d);
+
     float isLand = step(0.03, vLuminance);
 
     vec3 nn = normalize(vPosition);
@@ -78,7 +76,7 @@ export const PARTICLE_FRAGMENT = `
 
     float spread = spread1 * 0.4 + spread2 * 0.35 + spread3 * 0.25;
 
-    float p = vCharIndex * 73.0 + vLuminance * 137.0;
+    float p = vLuminance * 137.0;
     float tick = sin(uTime * 0.3 + p) * 0.5 + 0.5;
     float dotVariance = 0.6 + spread * 0.3 + tick * 0.1;
 
@@ -87,14 +85,11 @@ export const PARTICLE_FRAGMENT = `
     base *= (0.8 + basePulse * 0.2) * dotVariance;
 
     float glow = vShimmer * 0.7;
-    vec2 pc = gl_PointCoord - vec2(0.5);
-    float circle = 1.0 - step(0.4, length(pc));
-    float alpha = circle * texColor.a * (base + glow) * edge;
+    float alpha = circle * (base + glow) * edge;
     if (alpha < 0.005) discard;
 
     float brightness = mix(0.12, 0.3, isLand) * (0.8 + basePulse * 0.2) * dotVariance + vShimmer * 0.7;
-    vec3 color = vec3(brightness);
-    gl_FragColor = vec4(color, alpha);
+    gl_FragColor = vec4(vec3(brightness), alpha);
   }
 `;
 
