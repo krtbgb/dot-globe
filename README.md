@@ -64,20 +64,33 @@ import { DotGlobeMin } from "dot-globe"
 // Subtle and slow
 <DotGlobeMin minBrightness={0.1} maxBrightness={0.6} pulseSpeed={0.5} />
 
-// Full bright, no pulse fade
-<DotGlobeMin minBrightness={0.8} pulseSpeed={3} />
+// Rapid fire pulses
+<DotGlobeMin pulseFrequency={3} pulseSpeed={1.5} />
+
+// Transparent overlay with blue dots — layer on top of any site
+<DotGlobeMin backgroundOpacity={0} dotColor="#4488ff" />
+
+// Dark blue background at 50% opacity
+<DotGlobeMin backgroundColor={0x000033} backgroundOpacity={0.5} dotColor="#88ccff" />
+
+// Green matrix style
+<DotGlobeMin dotColor="#00ff88" minBrightness={0.2} pulseFrequency={5} pulseSpeed={2} />
 ```
 
-| Prop | Type | Default |
-|------|------|---------|
-| `minBrightness` | `number` | `0.35` |
-| `maxBrightness` | `number` | `1.0` |
-| `pulseSpeed` | `number` | `1.0` |
-| `nightImageUrl` | `string` | bundled |
-| `className` | `string` | — |
-| `style` | `CSSProperties` | — |
-| `width` | `string \| number` | `"100%"` |
-| `height` | `string \| number` | `"100%"` |
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `minBrightness` | `number` | `0.35` | Minimum dot brightness (0–1) |
+| `maxBrightness` | `number` | `1.0` | Maximum dot brightness (0–1) |
+| `pulseSpeed` | `number` | `1.0` | Pulse fade speed — higher = faster |
+| `pulseFrequency` | `number` | `1.0` | Pulse rate — higher = more frequent |
+| `backgroundColor` | `number` | `0x000000` | Background color as hex number |
+| `backgroundOpacity` | `number` | `1.0` | Background opacity (0 = transparent) |
+| `dotColor` | `string` | `"#ffffff"` | Dot color as CSS hex string |
+| `nightImageUrl` | `string` | bundled | Custom night lights texture URL |
+| `className` | `string` | — | Container class name |
+| `style` | `CSSProperties` | — | Container inline styles |
+| `width` | `string \| number` | `"100%"` | Container width |
+| `height` | `string \| number` | `"100%"` | Container height |
 
 ---
 
@@ -100,6 +113,12 @@ Customize with URL params:
 ```html
 <!-- Brighter, faster pulses -->
 <iframe src="https://kurt.xyz/dot-globe/embed-min?minBrightness=0.5&pulseSpeed=2" style="width: 100%; height: 100vh; border: none;"></iframe>
+
+<!-- Transparent overlay with colored dots -->
+<iframe src="https://kurt.xyz/dot-globe/embed-min?backgroundOpacity=0&dotColor=4488ff" style="width: 100%; height: 100vh; border: none;"></iframe>
+
+<!-- Rapid pulses, green dots -->
+<iframe src="https://kurt.xyz/dot-globe/embed-min?pulseFrequency=5&dotColor=00ff88" style="width: 100%; height: 100vh; border: none;"></iframe>
 
 <!-- Detailed globe, no atmosphere -->
 <iframe src="https://kurt.xyz/dot-globe/embed?dotSize=3&gridStep=0.5&atmosphere=false" style="width: 100%; height: 100vh; border: none;"></iframe>
