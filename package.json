@@ -1,6 +1,6 @@
 {
   "name": "dot-globe",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Minimal 3D dot globe for React — NASA Black Marble night lights, city bloom pulses, customizable shaders",
   "keywords": [
     "globe",
@@ -35,7 +35,8 @@
   "jsdelivr": "dist/embed.global.js",
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts --external react && tsup src/embed.ts --format iife --global-name DotGlobe --outDir dist --no-dts && tsup src/embed-min.ts --format iife --global-name DotGlobeMin --outDir dist --no-dts",
-    "dev": "tsup src/index.ts --format cjs,esm --dts --external react --watch"
+    "dev": "tsup src/index.ts --format cjs,esm --dts --external react --watch",
+    "test": "vitest run"
   },
   "dependencies": {
     "three": ">=0.150.0"
@@ -49,7 +50,8 @@
     "@types/three": "^0.160.0",
     "react": "^18",
     "tsup": "^8",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.2"
   },
   "license": "MIT",
   "repository": {

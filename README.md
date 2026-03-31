@@ -1,6 +1,15 @@
 # dot-globe
 
+[![npm version](https://img.shields.io/npm/v/dot-globe.svg)](https://www.npmjs.com/package/dot-globe)
+[![npm downloads](https://img.shields.io/npm/dm/dot-globe.svg)](https://www.npmjs.com/package/dot-globe)
+[![CI](https://github.com/krtbgb/dot-globe/actions/workflows/ci.yml/badge.svg)](https://github.com/krtbgb/dot-globe/actions/workflows/ci.yml)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/dot-globe)](https://bundlephobia.com/package/dot-globe)
+[![license](https://img.shields.io/npm/l/dot-globe.svg)](https://github.com/krtbgb/dot-globe/blob/main/LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-ready-blue.svg)](https://www.npmjs.com/package/dot-globe)
+
 Minimal 3D dot globe for React, built with Three.js and NASA Black Marble night lights data. Zero config, one import.
+
+**[Live Demo](https://kurt.xyz/dot-globe)**
 
 ## Install
 
@@ -45,28 +54,34 @@ import { DotGlobeMin } from "dot-globe"
 <DotGlobeMin />
 ```
 
-Accepts `className`, `style`, `width`, `height`, and `nightImageUrl`.
+| Prop | Type | Default |
+|------|------|---------|
+| `minBrightness` | `number` | `0.35` |
+| `maxBrightness` | `number` | `1.0` |
+| `pulseSpeed` | `number` | `1.0` |
+| `nightImageUrl` | `string` | bundled |
+| `className` | `string` | — |
+| `style` | `CSSProperties` | — |
+| `width` | `string \| number` | `"100%"` |
+| `height` | `string \| number` | `"100%"` |
 
 ---
 
 ### Embed (Webflow, HTML, no-build)
 
-Add a `<div>` with `data-dot-globe` and include the script:
+Use an iframe:
 
 ```html
-<div data-dot-globe style="width: 100%; height: 100vh;"></div>
-<script src="https://unpkg.com/dot-globe@1/dist/embed.global.js"></script>
+<iframe src="https://kurt.xyz/dot-globe/embed" style="width: 100%; height: 100vh; border: none;"></iframe>
 ```
 
-Or create programmatically:
+Or the min variant:
 
 ```html
-<div id="globe" style="width: 100%; height: 500px;"></div>
-<script src="https://unpkg.com/dot-globe@1/dist/embed.global.js"></script>
-<script>
-  DotGlobe.create({ container: "#globe" });
-</script>
+<iframe src="https://kurt.xyz/dot-globe/embed-min" style="width: 100%; height: 100vh; border: none;"></iframe>
 ```
+
+Customize with URL params: `?dotSize=3&rotationSpeed=0.002&atmosphere=false`
 
 ## License
 
