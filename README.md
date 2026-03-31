@@ -45,7 +45,7 @@ import { DotGlobe } from "dot-globe"
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `gridStep` | `number` | `0.9` | Grid step in degrees — smaller = more dots |
-| `dotSize` | `number` | `0.6` | Base dot size multiplier |
+| `dotSize` | `number` | `1.0` | Base dot size multiplier |
 | `radius` | `number` | `7` | Globe radius in scene units |
 | `tilt` | `[number, number]` | `[35, -23.5]` | Axis tilt in degrees [x, z] |
 | `rotationSpeed` | `number` | `0.0006` | Rotation speed (radians/frame) |
