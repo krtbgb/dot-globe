@@ -41,19 +41,19 @@ export function buildCharAtlas(chars: string): { texture: THREE.CanvasTexture; c
 export function buildCircleTexture(size = 64): THREE.DataTexture {
   const data = new Uint8Array(size * size * 4);
   const half = size / 2;
+  const radius = 0.45; // normalized radius (0-1 range, 0.5 = edge of texture)
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
       const dx = (x - half + 0.5) / half;
       const dy = (y - half + 0.5) / half;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      // Hard circle with soft anti-aliased edge
-      const alpha = Math.max(0, Math.min(1, (1 - dist) * half * 0.5));
-      // Slight brightness boost at center for a subtle glow
-      const brightness = Math.max(0, 1 - dist * 0.3);
+      // Hard circle with 1px anti-aliased edge
+      const edgeWidth = 2.0 / size;
+      const alpha = dist <= radius ? 1.0 : dist <= radius + edgeWidth ? 1.0 - (dist - radius) / edgeWidth : 0.0;
       const i = (y * size + x) * 4;
-      data[i] = Math.round(brightness * 255);
-      data[i + 1] = Math.round(brightness * 255);
-      data[i + 2] = Math.round(brightness * 255);
+      data[i] = 255;
+      data[i + 1] = 255;
+      data[i + 2] = 255;
       data[i + 3] = Math.round(alpha * 255);
     }
   }

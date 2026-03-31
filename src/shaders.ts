@@ -86,7 +86,7 @@ export const PARTICLE_FRAGMENT = `
     if (alpha < 0.005) discard;
 
     float brightness = mix(0.12, 0.3, isLand) * (0.8 + basePulse * 0.2) * dotVariance + vShimmer * 0.7;
-    gl_FragColor = vec4(vec3(brightness) * circle.rgb, alpha);
+    gl_FragColor = vec4(vec3(brightness), alpha);
   }
 `;
 

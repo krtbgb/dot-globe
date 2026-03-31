@@ -105,7 +105,7 @@ const FRAGMENT = `
     float alpha = circle.a * mix(0.3, 1.0, glow) * edge;
 
     if (alpha < 0.005) discard;
-    gl_FragColor = vec4(uDotColor * brightness * circle.rgb, alpha);
+    gl_FragColor = vec4(uDotColor * brightness, alpha);
   }
 `;
 
