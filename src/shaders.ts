@@ -41,7 +41,7 @@ export const PARTICLE_VERTEX = `
     float pulse = 0.95 + hotspot * 0.2;
 
     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = uBaseSize * aSize * pulse * (200.0 / -mvPosition.z);
+    gl_PointSize = min(uBaseSize * aSize * pulse * (200.0 / -mvPosition.z), 30.0);
     gl_Position = projectionMatrix * mvPosition;
   }
 `;
