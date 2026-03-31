@@ -277,7 +277,7 @@ export function DotGlobeMax(props: DotGlobeMaxProps) {
           uTime: { value: 0 },
           uColor: { value: new THREE.Color(dotColor) },
           uGlowColor: { value: new THREE.Color(glowColor) },
-          uOpacity: { value: 1.0 },
+          uOpacity: { value: 0.0 },
           uEdgeFadeCutoff: { value: 0.5 },
           uEdgeFadeWidth: { value: 0.2 },
           uShimmerSpeed: { value: shimmerSpeed },
@@ -323,15 +323,25 @@ export function DotGlobeMax(props: DotGlobeMaxProps) {
 
     const clock = new THREE.Clock();
     let animId: number;
+    let fadeStart = -1;
+    const FADE_DURATION = 2.0;
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
       const t = clock.getElapsedTime();
       if (pivot && pivot.children.length > 0) {
         pivot.children[0].rotation.y += rotationSpeed;
+        // Start fade on first frame after particles exist
+        if (fadeStart < 0) fadeStart = t;
       }
       if (particleMaterial) {
         particleMaterial.uniforms.uTime.value = t;
+        if (fadeStart >= 0) {
+          const progress = Math.min((t - fadeStart) / FADE_DURATION, 1);
+          // Smooth ease-out curve
+          const eased = 1 - Math.pow(1 - progress, 3);
+          particleMaterial.uniforms.uOpacity.value = eased;
+        }
       }
       renderer.render(scene, camera);
     };
