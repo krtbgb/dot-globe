@@ -9,13 +9,7 @@
 Minimal 3D dot globe for React, built with Three.js and NASA Black Marble night lights data. Zero config, one import.
 
 <p align="center">
-  <a href="https://kurt.xyz/dot-globe">
-    <img src="https://raw.githubusercontent.com/krtbgb/dot-globe/main/preview.gif" alt="dot-globe preview" width="480" />
-  </a>
-</p>
-
-<p align="center">
-  <a href="https://kurt.xyz/dot-globe"><strong>Live Demo</strong></a>
+  <img src="https://raw.githubusercontent.com/krtbgb/dot-globe/main/assets/preview.gif" alt="dot-globe preview" width="480" />
 </p>
 
 ## Install
