@@ -26,6 +26,22 @@ import { DotGlobe } from "dot-globe"
 <DotGlobe />
 ```
 
+#### Examples
+
+```tsx
+// Transparent overlay on any page
+<DotGlobe backgroundOpacity={0} />
+
+// Dense, detailed dots with no atmosphere
+<DotGlobe gridStep={0.5} dotSize={3} atmosphere={false} />
+
+// Slow rotation, tilted view
+<DotGlobe rotationSpeed={0.0002} tilt={[15, -10]} />
+
+// Custom background at 50% opacity
+<DotGlobe backgroundColor={0x111122} backgroundOpacity={0.5} />
+```
+
 ## Props
 
 | Prop | Type | Default |
@@ -76,6 +92,9 @@ import { DotGlobeMin } from "dot-globe"
 
 // Green matrix style
 <DotGlobeMin dotColor="#00ff88" minBrightness={0.2} pulseFrequency={5} pulseSpeed={2} />
+
+// Tilted with slow rotation
+<DotGlobeMin tilt={[25, -15]} rotationSpeed={0.0003} />
 ```
 
 | Prop | Type | Default | Description |
@@ -128,6 +147,9 @@ Customize with URL params:
 
 <!-- Slow rotation, custom tilt -->
 <iframe src="https://kurt.xyz/dot-globe/embed?rotationSpeed=0.0002&tiltX=15&tiltZ=-10" style="width: 100%; height: 100vh; border: none;"></iframe>
+
+<!-- Transparent min globe, tilted, colored dots -->
+<iframe src="https://kurt.xyz/dot-globe/embed-min?backgroundOpacity=0&dotColor=ff6644&tiltX=30&rotationSpeed=0.001" style="width: 100%; height: 100vh; border: none;"></iframe>
 ```
 
 ## License
