@@ -1,6 +1,28 @@
 import * as THREE from "three";
 import { EARTH_NIGHT_BASE64 } from "./earth-night";
 
+function buildCircleTexture(size = 64): THREE.DataTexture {
+  const data = new Uint8Array(size * size * 4);
+  const half = size / 2;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const dx = (x - half + 0.5) / half;
+      const dy = (y - half + 0.5) / half;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const alpha = Math.max(0, Math.min(1, (1 - dist) * half * 0.5));
+      const brightness = Math.max(0, 1 - dist * 0.3);
+      const i = (y * size + x) * 4;
+      data[i] = Math.round(brightness * 255);
+      data[i + 1] = Math.round(brightness * 255);
+      data[i + 2] = Math.round(brightness * 255);
+      data[i + 3] = Math.round(alpha * 255);
+    }
+  }
+  const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
+  texture.needsUpdate = true;
+  return texture;
+}
+
 const CONFIG = {
   dotCount: 1200,
   globeRadius: 7,
@@ -79,6 +101,7 @@ const FRAGMENT = `
   uniform float uMinBrightness;
   uniform float uMaxBrightness;
   uniform vec3 uDotColor;
+  uniform sampler2D uCircleTex;
   varying float vFacing;
   varying float vGlow;
 
@@ -86,16 +109,14 @@ const FRAGMENT = `
     float front = smoothstep(-0.2, 0.4, vFacing);
     float edge = 0.1 + front * 0.9;
 
-    vec2 c = gl_PointCoord - vec2(0.5);
-    float d = length(c);
-    float circle = 1.0 - step(0.25, d);
+    vec4 circle = texture2D(uCircleTex, gl_PointCoord);
 
     float glow = clamp(vGlow, 0.0, 1.0);
     float brightness = mix(uMinBrightness, uMaxBrightness, glow);
-    float alpha = circle * mix(0.3, 1.0, glow) * edge;
+    float alpha = circle.a * mix(0.3, 1.0, glow) * edge;
 
     if (alpha < 0.005) discard;
-    gl_FragColor = vec4(uDotColor * brightness, alpha);
+    gl_FragColor = vec4(uDotColor * brightness * circle.rgb, alpha);
   }
 `;
 
@@ -245,6 +266,7 @@ function createDotGlobeMin(options: EmbedMinOptions = {}) {
         uMaxBrightness: { value: maxBrightness },
         uPulseSpeed: { value: pulseSpeed },
         uDotColor: { value: new THREE.Color(dotColor) },
+        uCircleTex: { value: buildCircleTexture(64) },
         uPulseSlots: { value: pulseSlots },
         uPulseTimes: { value: pulseTimes },
       },

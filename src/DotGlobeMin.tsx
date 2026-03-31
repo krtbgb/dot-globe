@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { EARTH_NIGHT_BASE64 } from "./earth-night";
+import { buildCircleTexture } from "./utils";
 
 const CONFIG = {
   dotCount: 1200,
@@ -89,6 +90,7 @@ const FRAGMENT = `
   uniform float uMinBrightness;
   uniform float uMaxBrightness;
   uniform vec3 uDotColor;
+  uniform sampler2D uCircleTex;
   varying float vFacing;
   varying float vGlow;
 
@@ -96,16 +98,14 @@ const FRAGMENT = `
     float front = smoothstep(-0.2, 0.4, vFacing);
     float edge = 0.1 + front * 0.9;
 
-    vec2 c = gl_PointCoord - vec2(0.5);
-    float d = length(c);
-    float circle = 1.0 - step(0.25, d);
+    vec4 circle = texture2D(uCircleTex, gl_PointCoord);
 
     float glow = clamp(vGlow, 0.0, 1.0);
     float brightness = mix(uMinBrightness, uMaxBrightness, glow);
-    float alpha = circle * mix(0.3, 1.0, glow) * edge;
+    float alpha = circle.a * mix(0.3, 1.0, glow) * edge;
 
     if (alpha < 0.005) discard;
-    gl_FragColor = vec4(uDotColor * brightness, alpha);
+    gl_FragColor = vec4(uDotColor * brightness * circle.rgb, alpha);
   }
 `;
 
@@ -153,6 +153,7 @@ export function DotGlobeMin(props: DotGlobeMinProps) {
     if (!canvasRef.current || !containerRef.current) return;
 
     const container = containerRef.current;
+    const circleTexture = buildCircleTexture(64);
     const rect = container.getBoundingClientRect();
     const w = rect.width || window.innerWidth;
     const h = rect.height || window.innerHeight;
@@ -254,6 +255,7 @@ export function DotGlobeMin(props: DotGlobeMinProps) {
           uMaxBrightness: { value: maxBrightness },
           uPulseSpeed: { value: pulseSpeed },
           uDotColor: { value: new THREE.Color(dotColor) },
+          uCircleTex: { value: circleTexture },
           uPulseSlots: { value: pulseSlots },
           uPulseTimes: { value: pulseTimes },
         },
@@ -325,6 +327,7 @@ export function DotGlobeMin(props: DotGlobeMinProps) {
       cancelAnimationFrame(animId);
       geometry?.dispose();
       material?.dispose();
+      circleTexture.dispose();
       renderer.dispose();
     };
   }, []);

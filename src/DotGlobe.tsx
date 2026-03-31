@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { DotGlobeProps, DEFAULT_CONFIG } from "./types";
-import { sampleGlobe } from "./utils";
+import { sampleGlobe, buildCircleTexture } from "./utils";
 import { PARTICLE_VERTEX, PARTICLE_FRAGMENT, ATMOSPHERE_VERTEX, ATMOSPHERE_FRAGMENT } from "./shaders";
 import { EARTH_NIGHT_BASE64 } from "./earth-night";
 
@@ -62,6 +62,7 @@ export function DotGlobe(props: DotGlobeProps) {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     const charCount = chars.length || 1;
+    const circleTexture = buildCircleTexture(64);
 
     const img = new Image();
     img.crossOrigin = "anonymous";
@@ -96,6 +97,7 @@ export function DotGlobe(props: DotGlobeProps) {
         uniforms: {
           uTime: { value: 0 },
           uBaseSize: { value: dotSize },
+          uCircleTex: { value: circleTexture },
         },
         vertexShader: PARTICLE_VERTEX,
         fragmentShader: PARTICLE_FRAGMENT,
@@ -164,6 +166,7 @@ export function DotGlobe(props: DotGlobeProps) {
       particleMaterial?.dispose();
       atmosGeometry?.dispose();
       atmosMaterial?.dispose();
+      circleTexture.dispose();
       renderer.dispose();
     };
   }, [

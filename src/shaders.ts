@@ -9,7 +9,6 @@ export const PARTICLE_VERTEX = `
   varying float vFacing;
   varying float vLuminance;
   varying float vShimmer;
-  varying float vCharIndex;
   varying vec3 vPosition;
 
   void main() {
@@ -37,11 +36,10 @@ export const PARTICLE_VERTEX = `
     float hotspot = blooms * landMask + cityBoost * 0.5;
 
     vShimmer = wave * 0.3 + hotspot * 0.7;
-    vCharIndex = 0.0;
     float pulse = 0.95 + hotspot * 0.2;
 
     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = min(uBaseSize * aSize * pulse * (200.0 / -mvPosition.z), 30.0);
+    gl_PointSize = min(uBaseSize * aSize * pulse * (200.0 / -mvPosition.z), 64.0);
     gl_Position = projectionMatrix * mvPosition;
   }
 `;
@@ -49,6 +47,7 @@ export const PARTICLE_VERTEX = `
 export const PARTICLE_FRAGMENT = `
   precision highp float;
   uniform float uTime;
+  uniform sampler2D uCircleTex;
   varying float vFacing;
   varying float vLuminance;
   varying float vShimmer;
@@ -57,9 +56,7 @@ export const PARTICLE_FRAGMENT = `
   void main() {
     float edge = step(0.0, vFacing) * smoothstep(0.0, 0.4, vFacing);
 
-    vec2 pc = gl_PointCoord - vec2(0.5);
-    float d = length(pc);
-    float circle = 1.0 - step(0.25, d);
+    vec4 circle = texture2D(uCircleTex, gl_PointCoord);
 
     float isLand = step(0.03, vLuminance);
 
@@ -85,11 +82,11 @@ export const PARTICLE_FRAGMENT = `
     base *= (0.8 + basePulse * 0.2) * dotVariance;
 
     float glow = vShimmer * 0.7;
-    float alpha = circle * (base + glow) * edge;
+    float alpha = circle.a * (base + glow) * edge;
     if (alpha < 0.005) discard;
 
     float brightness = mix(0.12, 0.3, isLand) * (0.8 + basePulse * 0.2) * dotVariance + vShimmer * 0.7;
-    gl_FragColor = vec4(vec3(brightness), alpha);
+    gl_FragColor = vec4(vec3(brightness) * circle.rgb, alpha);
   }
 `;
 
