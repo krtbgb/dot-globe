@@ -62,58 +62,6 @@ import { DotGlobe } from "dot-globe"
 
 <br/>
 
-### DotGlobeMax
-
-High-fidelity variant with 150k shimmer particles, additive blending, and atmosphere glow.
-
-```tsx
-import { DotGlobeMax } from "dot-globe"
-
-<DotGlobeMax />
-```
-
-#### Examples
-
-```tsx
-// Transparent overlay
-<DotGlobeMax backgroundOpacity={0} />
-
-// Warm vintage style
-<DotGlobeMax dotColor="#ddd0c4" glowColor="#f5ece4" atmosphereColor="#998880" />
-
-// Intense shimmer, more particles
-<DotGlobeMax shimmerSpeed={6} shimmerIntensity={0.9} particleCount={200000} />
-
-// Zoomed in, no tilt
-<DotGlobeMax cameraDistance={14} tilt={[0, 0]} />
-```
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `dotColor` | `string` | `"#ffffff"` | Particle color |
-| `glowColor` | `string` | `"#ffffff"` | Bright core glow color |
-| `particleCount` | `number` | `150000` | Number of particles |
-| `particleSize` | `number` | `0.45` | Base particle size |
-| `shimmerSpeed` | `number` | `3.5` | Shimmer animation speed |
-| `shimmerIntensity` | `number` | `0.7` | Shimmer intensity (0–1) |
-| `tilt` | `[number, number]` | `[35, -23.5]` | Axis tilt in degrees [x, z] |
-| `rotationSpeed` | `number` | `0.0008` | Rotation speed (radians/frame) |
-| `atmosphere` | `boolean` | `true` | Show atmosphere rim glow |
-| `atmosphereColor` | `string` | `"#888888"` | Atmosphere color |
-| `atmosphereOpacity` | `number` | `0.025` | Atmosphere opacity |
-| `backgroundColor` | `number` | `0x000000` | Background color |
-| `backgroundOpacity` | `number` | `1.0` | Background opacity (0 = transparent) |
-| `radius` | `number` | `7` | Globe radius |
-| `cameraDistance` | `number` | `20` | Camera distance |
-| `cameraVerticalOffset` | `number` | `-3` | Camera vertical offset |
-| `nightImageUrl` | `string` | bundled | Custom night lights texture |
-| `className` | `string` | — | Container class name |
-| `style` | `CSSProperties` | — | Container inline styles |
-| `width` | `string \| number` | `"100%"` | Container width |
-| `height` | `string \| number` | `"100%"` | Container height |
-
-<br/>
-
 ### DotGlobeMin
 
 A lighter variant with uniform dots and transaction-style pulse animations.
