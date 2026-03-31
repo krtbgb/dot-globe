@@ -61,6 +61,19 @@ import { DotGlobeMin } from "dot-globe"
 <DotGlobeMin />
 ```
 
+#### Examples
+
+```tsx
+// Brighter, faster pulses
+<DotGlobeMin minBrightness={0.5} maxBrightness={1.0} pulseSpeed={2} />
+
+// Subtle and slow
+<DotGlobeMin minBrightness={0.1} maxBrightness={0.6} pulseSpeed={0.5} />
+
+// Full bright, no pulse fade
+<DotGlobeMin minBrightness={0.8} pulseSpeed={3} />
+```
+
 | Prop | Type | Default |
 |------|------|---------|
 | `minBrightness` | `number` | `0.35` |
