@@ -127,10 +127,12 @@ export interface DotGlobeMinProps {
   maxBrightness?: number;
   /** Pulse speed multiplier — higher = faster fade in/out. Default: 1.0 */
   pulseSpeed?: number;
+  /** Pulse frequency multiplier — higher = more frequent pulses. Default: 1.0 */
+  pulseFrequency?: number;
 }
 
 export function DotGlobeMin(props: DotGlobeMinProps) {
-  const { className, style, width = "100%", height = "100%", nightImageUrl, minBrightness = 0.35, maxBrightness = 1.0, pulseSpeed = 1.0 } = props;
+  const { className, style, width = "100%", height = "100%", nightImageUrl, minBrightness = 0.35, maxBrightness = 1.0, pulseSpeed = 1.0, pulseFrequency = 1.0 } = props;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -258,7 +260,7 @@ export function DotGlobeMin(props: DotGlobeMinProps) {
       if (material) {
         material.uniforms.uTime.value = t;
 
-        const interval = 0.3 + Math.random() * 0.5;
+        const interval = (0.3 + Math.random() * 0.5) / pulseFrequency;
         if (t - lastPulse > interval) {
           let slot = 0, oldestAge = 0;
           for (let i = 0; i < 40; i++) {

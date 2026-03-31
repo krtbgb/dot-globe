@@ -114,10 +114,12 @@ interface EmbedMinOptions {
   maxBrightness?: number;
   /** Pulse speed multiplier — higher = faster fade in/out. Default: 1.0 */
   pulseSpeed?: number;
+  /** Pulse frequency multiplier — higher = more frequent pulses. Default: 1.0 */
+  pulseFrequency?: number;
 }
 
 function createDotGlobeMin(options: EmbedMinOptions = {}) {
-  const { container: containerOpt, nightImageUrl = EARTH_NIGHT_BASE64, minBrightness = 0.35, maxBrightness = 1.0, pulseSpeed = 1.0 } = options;
+  const { container: containerOpt, nightImageUrl = EARTH_NIGHT_BASE64, minBrightness = 0.35, maxBrightness = 1.0, pulseSpeed = 1.0, pulseFrequency = 1.0 } = options;
 
   let el: HTMLElement;
   if (typeof containerOpt === "string") {
@@ -247,7 +249,7 @@ function createDotGlobeMin(options: EmbedMinOptions = {}) {
     }
     if (material) {
       material.uniforms.uTime.value = t;
-      const interval = 0.3 + Math.random() * 0.5;
+      const interval = (0.3 + Math.random() * 0.5) / pulseFrequency;
       if (t - lastPulse > interval) {
         let slot = 0, oldestAge = 0;
         for (let i = 0; i < 40; i++) {
