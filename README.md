@@ -18,7 +18,7 @@ Minimal 3D dot globe for React, built with Three.js and NASA Black Marble night 
 npm install dot-globe
 ```
 
-## Usage
+## DotGlobe
 
 ```tsx
 import { DotGlobe } from "dot-globe"
@@ -42,27 +42,26 @@ import { DotGlobe } from "dot-globe"
 <DotGlobe backgroundColor={0x111122} backgroundOpacity={0.5} />
 ```
 
-## Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `gridStep` | `number` | `0.9` | Grid step in degrees — smaller = more dots |
+| `dotSize` | `number` | `2.0` | Base dot size multiplier |
+| `radius` | `number` | `7` | Globe radius in scene units |
+| `tilt` | `[number, number]` | `[35, -23.5]` | Axis tilt in degrees [x, z] |
+| `rotationSpeed` | `number` | `0.0006` | Rotation speed (radians/frame) |
+| `chars` | `string` | `"."` | ASCII character(s) for dots |
+| `atmosphere` | `boolean` | `true` | Show atmosphere rim glow |
+| `backgroundColor` | `number` | `0x000000` | Background color as hex number |
+| `backgroundOpacity` | `number` | `1.0` | Background opacity (0 = transparent) |
+| `nightImageUrl` | `string` | bundled | Custom night lights texture URL |
+| `className` | `string` | — | Container class name |
+| `style` | `CSSProperties` | — | Container inline styles |
+| `width` | `string \| number` | `"100%"` | Container width |
+| `height` | `string \| number` | `"100%"` | Container height |
 
-| Prop | Type | Default |
-|------|------|---------|
-| `gridStep` | `number` | `0.9` |
-| `dotSize` | `number` | `2.0` |
-| `radius` | `number` | `7` |
-| `tilt` | `[number, number]` | `[35, -23.5]` |
-| `rotationSpeed` | `number` | `0.0006` |
-| `chars` | `string` | `"."` |
-| `atmosphere` | `boolean` | `true` |
-| `backgroundColor` | `number` | `0x000000` |
-| `backgroundOpacity` | `number` | `1.0` |
-| `className` | `string` | — |
-| `style` | `CSSProperties` | — |
-| `width` | `string \| number` | `"100%"` |
-| `height` | `string \| number` | `"100%"` |
+---
 
-<br/>
-
-### DotGlobeMin
+## DotGlobeMin
 
 A lighter variant with uniform dots and transaction-style pulse animations.
 
@@ -103,11 +102,11 @@ import { DotGlobeMin } from "dot-globe"
 | `maxBrightness` | `number` | `1.0` | Maximum dot brightness (0–1) |
 | `pulseSpeed` | `number` | `1.0` | Pulse fade speed — higher = faster |
 | `pulseFrequency` | `number` | `1.0` | Pulse rate — higher = more frequent |
-| `backgroundColor` | `number` | `0x000000` | Background color as hex number |
-| `backgroundOpacity` | `number` | `1.0` | Background opacity (0 = transparent) |
 | `dotColor` | `string` | `"#ffffff"` | Dot color as CSS hex string |
 | `tilt` | `[number, number]` | `[0, 0]` | Axis tilt in degrees [x, z] |
 | `rotationSpeed` | `number` | `0.0008` | Rotation speed (radians/frame) |
+| `backgroundColor` | `number` | `0x000000` | Background color as hex number |
+| `backgroundOpacity` | `number` | `1.0` | Background opacity (0 = transparent) |
 | `nightImageUrl` | `string` | bundled | Custom night lights texture URL |
 | `className` | `string` | — | Container class name |
 | `style` | `CSSProperties` | — | Container inline styles |
@@ -116,9 +115,7 @@ import { DotGlobeMin } from "dot-globe"
 
 ---
 
-### Embed (Webflow, HTML, no-build)
-
-Use an iframe:
+## Embed (Webflow, HTML, no-build)
 
 ```html
 <iframe src="https://kurt.xyz/dot-globe/embed" style="width: 100%; height: 100vh; border: none;"></iframe>
@@ -147,9 +144,6 @@ Customize with URL params:
 
 <!-- Slow rotation, custom tilt -->
 <iframe src="https://kurt.xyz/dot-globe/embed?rotationSpeed=0.0002&tiltX=15&tiltZ=-10" style="width: 100%; height: 100vh; border: none;"></iframe>
-
-<!-- Transparent min globe, tilted, colored dots -->
-<iframe src="https://kurt.xyz/dot-globe/embed-min?backgroundOpacity=0&dotColor=ff6644&tiltX=30&rotationSpeed=0.001" style="width: 100%; height: 100vh; border: none;"></iframe>
 ```
 
 ## License
