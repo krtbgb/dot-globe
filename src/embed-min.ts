@@ -14,6 +14,7 @@ const VERTEX = `
   uniform float uTime;
   uniform float uMinBrightness;
   uniform float uMaxBrightness;
+  uniform float uPulseSpeed;
   uniform float uPulseSlots[40];
   uniform float uPulseTimes[40];
   attribute float aIndex;
@@ -53,11 +54,10 @@ const VERTEX = `
     float idx = aIndex;
     for (int i = 0; i < 40; i++) {
       if (abs(uPulseSlots[i] - idx) < 0.5) {
-        float age = uTime - uPulseTimes[i];
-        float fadeIn = age / 6.0;
+        float age = (uTime - uPulseTimes[i]) * uPulseSpeed;
+        float fadeIn = clamp(age / 2.0, 0.0, 1.0);
         fadeIn = fadeIn * fadeIn * (3.0 - 2.0 * fadeIn);
-        fadeIn = clamp(fadeIn, 0.0, 1.0);
-        float fadeOut = exp(-max(0.0, age - 5.0) * 0.1);
+        float fadeOut = exp(-max(0.0, age - 1.5) * 0.4);
         pulseGlow = max(pulseGlow, fadeIn * fadeOut);
       }
     }
@@ -112,10 +112,12 @@ interface EmbedMinOptions {
   minBrightness?: number;
   /** Maximum dot brightness (0-1). Default: 1.0 */
   maxBrightness?: number;
+  /** Pulse speed multiplier — higher = faster fade in/out. Default: 1.0 */
+  pulseSpeed?: number;
 }
 
 function createDotGlobeMin(options: EmbedMinOptions = {}) {
-  const { container: containerOpt, nightImageUrl = EARTH_NIGHT_BASE64, minBrightness = 0.35, maxBrightness = 1.0 } = options;
+  const { container: containerOpt, nightImageUrl = EARTH_NIGHT_BASE64, minBrightness = 0.35, maxBrightness = 1.0, pulseSpeed = 1.0 } = options;
 
   let el: HTMLElement;
   if (typeof containerOpt === "string") {
@@ -220,6 +222,7 @@ function createDotGlobeMin(options: EmbedMinOptions = {}) {
         uTime: { value: 0 },
         uMinBrightness: { value: minBrightness },
         uMaxBrightness: { value: maxBrightness },
+        uPulseSpeed: { value: pulseSpeed },
         uPulseSlots: { value: pulseSlots },
         uPulseTimes: { value: pulseTimes },
       },
