@@ -14,6 +14,7 @@ const CONFIG = {
 };
 
 const VERTEX = `
+  precision highp float;
   uniform float uTime;
   uniform float uMinBrightness;
   uniform float uMaxBrightness;
@@ -84,6 +85,7 @@ const VERTEX = `
 `;
 
 const FRAGMENT = `
+  precision highp float;
   uniform float uMinBrightness;
   uniform float uMaxBrightness;
   uniform vec3 uDotColor;

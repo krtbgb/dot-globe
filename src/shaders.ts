@@ -1,4 +1,5 @@
 export const PARTICLE_VERTEX = `
+  precision highp float;
   uniform float uTime;
   uniform float uBaseSize;
   attribute float aLuminance;
@@ -46,6 +47,7 @@ export const PARTICLE_VERTEX = `
 `;
 
 export const PARTICLE_FRAGMENT = `
+  precision highp float;
   uniform sampler2D uCharTex;
   uniform float uCharCount;
   uniform float uTime;
@@ -86,7 +88,7 @@ export const PARTICLE_FRAGMENT = `
 
     float glow = vShimmer * 0.7;
     vec2 pc = gl_PointCoord - vec2(0.5);
-    float circle = 1.0 - smoothstep(0.15, 0.45, length(pc));
+    float circle = 1.0 - step(0.4, length(pc));
     float alpha = circle * texColor.a * (base + glow) * edge;
     if (alpha < 0.005) discard;
 
