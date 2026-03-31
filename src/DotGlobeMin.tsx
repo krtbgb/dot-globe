@@ -86,6 +86,7 @@ const VERTEX = `
 const FRAGMENT = `
   uniform float uMinBrightness;
   uniform float uMaxBrightness;
+  uniform vec3 uDotColor;
   varying float vFacing;
   varying float vGlow;
 
@@ -102,7 +103,7 @@ const FRAGMENT = `
     float alpha = circle * mix(0.3, 1.0, glow) * edge;
 
     if (alpha < 0.005) discard;
-    gl_FragColor = vec4(vec3(brightness), alpha);
+    gl_FragColor = vec4(uDotColor * brightness, alpha);
   }
 `;
 
@@ -129,10 +130,16 @@ export interface DotGlobeMinProps {
   pulseSpeed?: number;
   /** Pulse frequency multiplier — higher = more frequent pulses. Default: 1.0 */
   pulseFrequency?: number;
+  /** Background color as hex number. Default: 0x000000 */
+  backgroundColor?: number;
+  /** Background opacity (0-1). Set to 0 for fully transparent. Default: 1.0 */
+  backgroundOpacity?: number;
+  /** Dot color as CSS hex string. Default: "#ffffff" */
+  dotColor?: string;
 }
 
 export function DotGlobeMin(props: DotGlobeMinProps) {
-  const { className, style, width = "100%", height = "100%", nightImageUrl, minBrightness = 0.35, maxBrightness = 1.0, pulseSpeed = 1.0, pulseFrequency = 1.0 } = props;
+  const { className, style, width = "100%", height = "100%", nightImageUrl, minBrightness = 0.35, maxBrightness = 1.0, pulseSpeed = 1.0, pulseFrequency = 1.0, backgroundColor = 0x000000, backgroundOpacity = 1.0, dotColor = "#ffffff" } = props;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -145,13 +152,21 @@ export function DotGlobeMin(props: DotGlobeMinProps) {
     const h = rect.height || window.innerHeight;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x000000);
+    if (backgroundOpacity < 1) {
+      scene.background = null;
+    } else {
+      scene.background = new THREE.Color(backgroundColor);
+    }
 
     const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 1000);
     camera.position.set(0, 0, CONFIG.cameraDistance);
     camera.lookAt(0, 0, 0);
 
-    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true });
+    const needsAlpha = backgroundOpacity < 1;
+    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true, alpha: needsAlpha });
+    if (needsAlpha) {
+      renderer.setClearColor(new THREE.Color(backgroundColor), backgroundOpacity);
+    }
     renderer.setSize(w, h);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
@@ -232,6 +247,7 @@ export function DotGlobeMin(props: DotGlobeMinProps) {
           uMinBrightness: { value: minBrightness },
           uMaxBrightness: { value: maxBrightness },
           uPulseSpeed: { value: pulseSpeed },
+          uDotColor: { value: new THREE.Color(dotColor) },
           uPulseSlots: { value: pulseSlots },
           uPulseTimes: { value: pulseTimes },
         },
@@ -306,7 +322,7 @@ export function DotGlobeMin(props: DotGlobeMinProps) {
     <div
       ref={containerRef}
       className={className}
-      style={{ width, height, position: "relative", background: "#000", ...style }}
+      style={{ width, height, position: "relative", ...style }}
     >
       <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block" }} />
     </div>
