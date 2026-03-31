@@ -12,6 +12,8 @@ const CONFIG = {
 
 const VERTEX = `
   uniform float uTime;
+  uniform float uMinBrightness;
+  uniform float uMaxBrightness;
   uniform float uPulseSlots[40];
   uniform float uPulseTimes[40];
   attribute float aIndex;
@@ -72,6 +74,8 @@ const VERTEX = `
 `;
 
 const FRAGMENT = `
+  uniform float uMinBrightness;
+  uniform float uMaxBrightness;
   varying float vFacing;
   varying float vGlow;
 
@@ -83,8 +87,9 @@ const FRAGMENT = `
     float d = length(c);
     float circle = 1.0 - step(0.25, d);
 
-    float alpha = circle * min(1.0, 0.2 + vGlow * 0.8) * edge;
-    float brightness = min(1.0, 0.25 + vGlow * 0.75);
+    float glow = clamp(vGlow, 0.0, 1.0);
+    float brightness = mix(uMinBrightness, uMaxBrightness, glow);
+    float alpha = circle * mix(0.3, 1.0, glow) * edge;
 
     if (alpha < 0.005) discard;
     gl_FragColor = vec4(vec3(brightness), alpha);
@@ -103,10 +108,14 @@ function getLuminance(data: Uint8ClampedArray, w: number, h: number, lat: number
 interface EmbedMinOptions {
   container?: string | HTMLElement;
   nightImageUrl?: string;
+  /** Minimum dot brightness (0-1). Default: 0.35 */
+  minBrightness?: number;
+  /** Maximum dot brightness (0-1). Default: 1.0 */
+  maxBrightness?: number;
 }
 
 function createDotGlobeMin(options: EmbedMinOptions = {}) {
-  const { container: containerOpt, nightImageUrl = EARTH_NIGHT_BASE64 } = options;
+  const { container: containerOpt, nightImageUrl = EARTH_NIGHT_BASE64, minBrightness = 0.35, maxBrightness = 1.0 } = options;
 
   let el: HTMLElement;
   if (typeof containerOpt === "string") {
@@ -209,6 +218,8 @@ function createDotGlobeMin(options: EmbedMinOptions = {}) {
     material = new THREE.ShaderMaterial({
       uniforms: {
         uTime: { value: 0 },
+        uMinBrightness: { value: minBrightness },
+        uMaxBrightness: { value: maxBrightness },
         uPulseSlots: { value: pulseSlots },
         uPulseTimes: { value: pulseTimes },
       },
