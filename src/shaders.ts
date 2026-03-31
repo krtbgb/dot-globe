@@ -85,7 +85,9 @@ export const PARTICLE_FRAGMENT = `
     base *= (0.8 + basePulse * 0.2) * dotVariance;
 
     float glow = vShimmer * 0.7;
-    float alpha = texColor.a * (base + glow) * edge;
+    vec2 pc = gl_PointCoord - vec2(0.5);
+    float circle = 1.0 - smoothstep(0.15, 0.45, length(pc));
+    float alpha = circle * texColor.a * (base + glow) * edge;
     if (alpha < 0.005) discard;
 
     float brightness = mix(0.12, 0.3, isLand) * (0.8 + basePulse * 0.2) * dotVariance + vShimmer * 0.7;
