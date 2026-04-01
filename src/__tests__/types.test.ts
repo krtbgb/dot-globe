@@ -4,7 +4,7 @@ import { DEFAULT_CONFIG } from '../types'
 describe('DEFAULT_CONFIG', () => {
   it('has expected default values', () => {
     expect(DEFAULT_CONFIG.gridStep).toBe(0.9)
-    expect(DEFAULT_CONFIG.dotSize).toBe(2.0)
+    expect(DEFAULT_CONFIG.dotSize).toBe(1.0)
     expect(DEFAULT_CONFIG.radius).toBe(7)
     expect(DEFAULT_CONFIG.tilt).toEqual([35, -23.5])
     expect(DEFAULT_CONFIG.rotationSpeed).toBe(0.0006)
