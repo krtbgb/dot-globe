@@ -344,11 +344,29 @@ function createDotGlobeMin(options: EmbedMinOptions = {}) {
   };
 }
 
+function parseUrlParams(): Partial<EmbedMinOptions> {
+  if (typeof window === "undefined") return {};
+  const p = new URLSearchParams(window.location.search);
+  const opts: Partial<EmbedMinOptions> = {};
+  if (p.has("dotSize")) opts.dotSize = parseFloat(p.get("dotSize")!);
+  if (p.has("minBrightness")) opts.minBrightness = parseFloat(p.get("minBrightness")!);
+  if (p.has("maxBrightness")) opts.maxBrightness = parseFloat(p.get("maxBrightness")!);
+  if (p.has("pulseSpeed")) opts.pulseSpeed = parseFloat(p.get("pulseSpeed")!);
+  if (p.has("pulseFrequency")) opts.pulseFrequency = parseFloat(p.get("pulseFrequency")!);
+  if (p.has("backgroundColor")) opts.backgroundColor = parseInt(p.get("backgroundColor")!, 16);
+  if (p.has("backgroundOpacity")) opts.backgroundOpacity = parseFloat(p.get("backgroundOpacity")!);
+  if (p.has("dotColor")) opts.dotColor = "#" + p.get("dotColor")!;
+  if (p.has("rotationSpeed")) opts.rotationSpeed = parseFloat(p.get("rotationSpeed")!);
+  if (p.has("tiltX") || p.has("tiltZ")) opts.tilt = [parseFloat(p.get("tiltX") || "0"), parseFloat(p.get("tiltZ") || "0")];
+  return opts;
+}
+
 if (typeof window !== "undefined") {
   (window as any).DotGlobeMin = { create: createDotGlobeMin };
   const init = () => {
     const el = document.querySelector("[data-dot-globe-min]");
-    if (el) createDotGlobeMin();
+    if (el) createDotGlobeMin(parseUrlParams());
+    else createDotGlobeMin(parseUrlParams());
   };
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);

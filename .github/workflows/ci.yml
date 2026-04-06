@@ -31,6 +31,13 @@ jobs:
           registry-url: https://registry.npmjs.org
       - run: npm install --legacy-peer-deps
       - run: npm run build
-      - run: npm publish
+      - run: |
+          CURRENT=$(npm view dot-globe version 2>/dev/null || echo "0.0.0")
+          LOCAL=$(node -p "require('./package.json').version")
+          if [ "$CURRENT" = "$LOCAL" ]; then
+            echo "v$LOCAL already published, skipping"
+          else
+            npm publish
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

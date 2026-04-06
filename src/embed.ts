@@ -189,19 +189,32 @@ function createDotGlobe(options: EmbedOptions = {}) {
   };
 }
 
-// Auto-init if script tag has data attributes
+function parseUrlParams(): Partial<EmbedOptions> {
+  if (typeof window === "undefined") return {};
+  const p = new URLSearchParams(window.location.search);
+  const opts: Partial<EmbedOptions> = {};
+  if (p.has("gridStep")) opts.gridStep = parseFloat(p.get("gridStep")!);
+  if (p.has("dotSize")) opts.dotSize = parseFloat(p.get("dotSize")!);
+  if (p.has("radius")) opts.radius = parseFloat(p.get("radius")!);
+  if (p.has("rotationSpeed")) opts.rotationSpeed = parseFloat(p.get("rotationSpeed")!);
+  if (p.has("backgroundColor")) opts.backgroundColor = parseInt(p.get("backgroundColor")!, 16);
+  if (p.has("backgroundOpacity")) opts.backgroundOpacity = parseFloat(p.get("backgroundOpacity")!);
+  if (p.has("atmosphere")) opts.atmosphere = p.get("atmosphere") !== "false";
+  if (p.has("tiltX") || p.has("tiltZ")) opts.tilt = [parseFloat(p.get("tiltX") || "35"), parseFloat(p.get("tiltZ") || "-23.5")];
+  return opts;
+}
+
 if (typeof window !== "undefined") {
   (window as any).DotGlobe = { create: createDotGlobe };
-
-  // Auto-init on DOMContentLoaded
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
-      const el = document.querySelector("[data-dot-globe]");
-      if (el) createDotGlobe();
-    });
-  } else {
+  const init = () => {
     const el = document.querySelector("[data-dot-globe]");
-    if (el) createDotGlobe();
+    if (el) createDotGlobe(parseUrlParams());
+    else createDotGlobe(parseUrlParams());
+  };
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
   }
 }
 

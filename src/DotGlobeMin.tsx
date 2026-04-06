@@ -67,9 +67,10 @@ const VERTEX = `
     for (int i = 0; i < 120; i++) {
       if (abs(uPulseSlots[i] - idx) < 0.5) {
         float age = (uTime - uPulseTimes[i]) * uPulseSpeed;
-        float fadeIn = clamp(age / 2.0, 0.0, 1.0);
+        float fadeIn = clamp(age / 1.5, 0.0, 1.0);
         fadeIn = fadeIn * fadeIn * (3.0 - 2.0 * fadeIn); // smooth hermite
-        float fadeOut = exp(-max(0.0, age - 1.5) * 0.4);
+        float fadeOut = 1.0 - clamp((age - 1.5) / 4.0, 0.0, 1.0);
+        fadeOut = fadeOut * fadeOut * (3.0 - 2.0 * fadeOut); // smooth hermite
         pulseGlow = max(pulseGlow, fadeIn * fadeOut);
       }
     }

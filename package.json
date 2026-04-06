@@ -1,6 +1,6 @@
 {
   "name": "dot-globe",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Minimal 3D dot globe for React — NASA Black Marble night lights, city bloom pulses, customizable shaders",
   "keywords": [
     "globe",
@@ -56,7 +56,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/krtbgb/dot-globe"
+    "url": "git+https://github.com/krtbgb/dot-globe.git"
   },
   "homepage": "https://kurt.xyz/dot-globe",
   "bugs": {
