@@ -18,66 +18,30 @@ const VERTEX = `
   precision highp float;
   uniform float uTime;
   uniform float uDotSize;
-  uniform float uMinBrightness;
-  uniform float uMaxBrightness;
   uniform float uPulseSpeed;
-  uniform float uPulseSlots[120];
-  uniform float uPulseTimes[120];
-  attribute float aIndex;
   attribute float aIsCity;
+  attribute float aPulseTime;
   varying float vFacing;
-  varying float vGlow;
+  varying float vPulse;
+  varying vec3 vPosition;
+  varying float vIsCity;
 
   void main() {
+    vPosition = position;
+    vIsCity = aIsCity;
     vec3 viewNormal = normalize(normalMatrix * normalize(position));
     vFacing = dot(viewNormal, vec3(0.0, 0.0, 1.0));
 
-    // Sweeping waves (from globe3)
-    vec3 n = normalize(position);
-    float wave1 = sin(uTime * 0.4 + n.x * 4.0 + n.y * 3.0) * 0.5 + 0.5;
-    float wave2 = sin(uTime * 0.3 - n.z * 5.0 + n.y * 2.0) * 0.5 + 0.5;
-    float wave = wave1 * 0.3 + wave2 * 0.2;
-    wave = smoothstep(0.15, 0.7, wave);
-
-    // City bloom hotspots (from globe3)
-    float bloom1 = pow(sin(uTime * 0.6 + n.x * 3.0 + n.z * 2.0) * 0.5 + 0.5, 4.0);
-    float bloom2 = pow(sin(uTime * 0.45 - n.y * 4.0 + n.x * 1.5) * 0.5 + 0.5, 4.0);
-    float bloom3 = pow(sin(uTime * 0.7 + n.z * 3.5 - n.x * 2.5) * 0.5 + 0.5, 4.0);
-    float bloom4 = pow(sin(uTime * 0.35 + n.y * 2.5 + n.z * 3.0) * 0.5 + 0.5, 4.0);
-    float blooms = max(bloom1, max(bloom2, max(bloom3, bloom4)));
-
-    // Per-dot variance
-    float p = dot(position, vec3(73.0, 137.0, 59.0));
-    float baseVar = sin(p) * 0.5 + 0.5;
-    float breathe = sin(uTime * 0.4 + p * 0.3) * 0.1;
-    float baseGlow = baseVar * 0.1 + breathe;
-
-    // City dots get wave + bloom glow — dampen at edges
-    float faceFade = smoothstep(0.0, 0.5, vFacing);
-    if (aIsCity > 0.5) {
-      float cityWave = wave * 0.1 + blooms * 0.2;
-      baseGlow += (0.05 + cityWave) * faceFade;
-    } else {
-      baseGlow += wave * 0.05 * faceFade;
+    // Per-dot pulse
+    vPulse = 0.0;
+    if (aPulseTime > 0.0) {
+      float age = (uTime - aPulseTime) * uPulseSpeed;
+      float fadeIn = clamp(age / 1.5, 0.0, 1.0);
+      fadeIn = fadeIn * fadeIn * (3.0 - 2.0 * fadeIn);
+      float fadeOut = 1.0 - clamp((age - 1.5) / 4.0, 0.0, 1.0);
+      fadeOut = fadeOut * fadeOut * (3.0 - 2.0 * fadeOut);
+      vPulse = fadeIn * fadeOut;
     }
-
-    // Transaction pulse check
-    float pulseGlow = 0.0;
-    float idx = aIndex;
-    for (int i = 0; i < 120; i++) {
-      if (abs(uPulseSlots[i] - idx) < 0.5) {
-        float age = (uTime - uPulseTimes[i]) * uPulseSpeed;
-        float fadeIn = clamp(age / 1.5, 0.0, 1.0);
-        fadeIn = fadeIn * fadeIn * (3.0 - 2.0 * fadeIn); // smooth hermite
-        float fadeOut = 1.0 - clamp((age - 1.5) / 4.0, 0.0, 1.0);
-        fadeOut = fadeOut * fadeOut * (3.0 - 2.0 * fadeOut); // smooth hermite
-        pulseGlow = max(pulseGlow, fadeIn * fadeOut);
-      }
-    }
-
-    float facingDamp = smoothstep(-0.3, 0.5, vFacing);
-    float pulseAdd = pulseGlow * 1.5 * facingDamp;
-    vGlow = baseGlow + pulseAdd;
 
     float backBoost = vFacing < 0.0 ? 1.3 : 1.0;
     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
@@ -88,24 +52,55 @@ const VERTEX = `
 
 const FRAGMENT = `
   precision highp float;
+  uniform float uTime;
   uniform float uMinBrightness;
   uniform float uMaxBrightness;
   uniform vec3 uDotColor;
   uniform sampler2D uCircleTex;
   varying float vFacing;
-  varying float vGlow;
+  varying float vPulse;
+  varying vec3 vPosition;
+  varying float vIsCity;
 
   void main() {
-    float front = smoothstep(-0.2, 0.4, vFacing);
-    float edge = 0.1 + front * 0.9;
-
+    float edge = 0.15 + 0.85 * smoothstep(-0.3, 0.4, vFacing);
     vec4 circle = texture2D(uCircleTex, gl_PointCoord);
 
-    float glow = clamp(vGlow, 0.0, 1.0);
-    float brightness = mix(uMinBrightness, uMaxBrightness, glow);
-    float alpha = circle.a * mix(0.3, 1.0, glow) * edge;
+    // Organic spread — tight groups that flow around the globe
+    vec3 nn = normalize(vPosition);
+    float drift = uTime * 0.04;
+    float warp1 = sin(nn.y * 6.0 + drift * 1.8) * 0.35;
+    float warp2 = cos(nn.x * 5.5 + drift * 1.3) * 0.3;
 
+    float spread1 = sin(nn.x * 6.0 + nn.z * warp1 + drift * 2.2) *
+                    sin(nn.z * 5.5 - nn.y * warp2 + drift * 1.7);
+    float spread2 = sin(nn.y * 7.0 + nn.x * warp2 + drift * 2.0 + warp1) *
+                    sin(nn.x * 5.0 + nn.z * warp1 - drift * 1.5);
+    float spread3 = sin(nn.z * 7.5 + nn.y * warp1 * 1.5 + drift * 2.5) *
+                    sin(nn.y * 6.0 - nn.x * warp2 * 1.2 + drift * 1.9);
+    float spread4 = sin(nn.x * 8.0 - nn.y * warp2 + drift * 2.8) *
+                    sin(nn.z * 6.5 + nn.x * warp1 + drift * 2.1);
+    float spread = spread1 * 0.3 + spread2 * 0.25 + spread3 * 0.25 + spread4 * 0.2;
+
+    // Per-dot tick + global breathing
+    float p = dot(nn, vec3(73.0, 137.0, 59.0));
+    float tick = sin(uTime * 0.3 + p) * 0.5 + 0.5;
+    float basePulse = sin(uTime * 0.25) * 0.5 + 0.5;
+    float dotVariance = 0.8 + spread * 0.15 + tick * 0.05;
+
+    // Base — bright and alive
+    float base = mix(0.6, 0.7, vIsCity);
+    base *= (0.9 + basePulse * 0.1) * dotVariance;
+
+    // Pulse adds brightness and size boost for contrast
+    float facingDamp = smoothstep(0.0, 0.6, vFacing);
+    float pulse = vPulse * facingDamp;
+    float brightness = (base + pulse * (1.5 - base)) * uMaxBrightness;
+
+    // Alpha: base dots slightly transparent, pulsed dots overdriven
+    float alpha = circle.a * mix(base, 1.3, pulse) * edge;
     if (alpha < 0.005) discard;
+
     gl_FragColor = vec4(uDotColor * brightness, alpha);
   }
 `;
@@ -137,7 +132,7 @@ export interface DotGlobeMinProps {
   pulseFrequency?: number;
   /** Background color as hex number. Default: 0x000000 */
   backgroundColor?: number;
-  /** Background opacity (0-1). Set to 0 for fully transparent. Default: 0 */
+  /** Background opacity (0-1). Set to 0 for fully transparent. Default: 1.0 */
   backgroundOpacity?: number;
   /** Dot color as CSS hex string. Default: "#ffffff" */
   dotColor?: string;
@@ -148,7 +143,7 @@ export interface DotGlobeMinProps {
 }
 
 export function DotGlobeMin(props: DotGlobeMinProps) {
-  const { className, style, width = "100%", height = "100%", nightImageUrl, dotSize = 1.0, minBrightness = 0.35, maxBrightness = 1.0, pulseSpeed = 1.0, pulseFrequency = 1.0, backgroundColor = 0x000000, backgroundOpacity = 0, dotColor = "#ffffff", tilt = [0, 0], rotationSpeed = 0.0008 } = props;
+  const { className, style, width = "100%", height = "100%", nightImageUrl, dotSize = 1.0, minBrightness = 0.35, maxBrightness = 1.0, pulseSpeed = 1.0, pulseFrequency = 3.0, backgroundColor = 0x000000, backgroundOpacity = 1.0, dotColor = "#ffffff", tilt = [0, 0], rotationSpeed = 0.0008 } = props;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -214,8 +209,8 @@ export function DotGlobeMin(props: DotGlobeMinProps) {
 
     let material: THREE.ShaderMaterial | null = null;
     let geometry: THREE.BufferGeometry | null = null;
-    const pulseSlots = new Float32Array(120).fill(-1);
-    const pulseTimes = new Float32Array(120).fill(-100);
+    const pulseTimes = new Float32Array(TOTAL).fill(-100);
+    let pulseTimeAttr: THREE.BufferAttribute | null = null;
 
     img.onload = () => {
       const offscreen = document.createElement("canvas");
@@ -248,8 +243,10 @@ export function DotGlobeMin(props: DotGlobeMinProps) {
 
       geometry = new THREE.BufferGeometry();
       geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-      geometry.setAttribute("aIndex", new THREE.Float32BufferAttribute(indices, 1));
       geometry.setAttribute("aIsCity", new THREE.Float32BufferAttribute(isCity, 1));
+      pulseTimeAttr = new THREE.BufferAttribute(pulseTimes, 1);
+      pulseTimeAttr.setUsage(THREE.DynamicDrawUsage);
+      geometry.setAttribute("aPulseTime", pulseTimeAttr);
 
       material = new THREE.ShaderMaterial({
         uniforms: {
@@ -260,8 +257,6 @@ export function DotGlobeMin(props: DotGlobeMinProps) {
           uPulseSpeed: { value: pulseSpeed },
           uDotColor: { value: new THREE.Color(dotColor) },
           uCircleTex: { value: circleTexture },
-          uPulseSlots: { value: pulseSlots },
-          uPulseTimes: { value: pulseTimes },
         },
         vertexShader: VERTEX,
         fragmentShader: FRAGMENT,
@@ -291,31 +286,22 @@ export function DotGlobeMin(props: DotGlobeMinProps) {
         pivot.children[0].rotation.y += rotationSpeed * dt * 60;
       }
 
-      if (material) {
+      if (material && pulseTimeAttr) {
         material.uniforms.uTime.value = t;
 
-        // pulseFrequency controls how many dots fire per interval
-        // Higher frequency = more dots pulsing simultaneously
-        const baseInterval = 0.3 + Math.random() * 0.5;
         const pulsesPerBurst = Math.max(1, Math.round(pulseFrequency));
-        const interval = baseInterval / Math.sqrt(pulseFrequency);
+        const interval = (0.3 + Math.random() * 0.5) / Math.sqrt(pulseFrequency);
         if (t - lastPulse > interval) {
           for (let b = 0; b < pulsesPerBurst; b++) {
-            let slot = 0, oldestAge = 0;
-            for (let i = 0; i < 120; i++) {
-              const age = t - pulseTimes[i];
-              if (age > oldestAge) { oldestAge = age; slot = i; }
-            }
-            // 70% chance to hit a city dot, 30% any dot
             const hitCity = Math.random() < 0.7;
-            pulseSlots[slot] = hitCity
+            const idx = hitCity
               ? CONFIG.dotCount + Math.floor(Math.random() * CONFIG.cityDots)
               : Math.floor(Math.random() * CONFIG.dotCount);
-            pulseTimes[slot] = t;
+            pulseTimes[idx] = t;
+            pulseTimeAttr.setX(idx, t);
           }
+          pulseTimeAttr.needsUpdate = true;
           lastPulse = t;
-          material.uniforms.uPulseSlots.value = pulseSlots;
-          material.uniforms.uPulseTimes.value = pulseTimes;
         }
       }
 

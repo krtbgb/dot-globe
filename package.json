@@ -1,6 +1,6 @@
 {
   "name": "dot-globe",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "Minimal 3D dot globe for React — NASA Black Marble night lights, city bloom pulses, customizable shaders",
   "keywords": [
     "globe",
