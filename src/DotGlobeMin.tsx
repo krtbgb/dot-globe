@@ -6,11 +6,11 @@ import { EARTH_NIGHT_BASE64 } from "./earth-night";
 import { buildCircleTexture } from "./utils";
 
 const CONFIG = {
-  dotCount: 1200,
+  dotCount: 3000,
   globeRadius: 7,
   rotationSpeedY: 0.0008,
   cameraDistance: 18,
-  cityDots: 800,
+  cityDots: 2000,
   luminanceThreshold: 0.08,
 };
 
@@ -86,16 +86,16 @@ const FRAGMENT = `
     float p = dot(nn, vec3(73.0, 137.0, 59.0));
     float tick = sin(uTime * 0.3 + p) * 0.5 + 0.5;
     float basePulse = sin(uTime * 0.25) * 0.5 + 0.5;
-    float dotVariance = 0.8 + spread * 0.15 + tick * 0.05;
+    float dotVariance = 0.75 + spread * 0.18 + tick * 0.07;
 
-    // Base — bright and alive
-    float base = mix(0.6, 0.7, vIsCity);
-    base *= (0.9 + basePulse * 0.1) * dotVariance;
+    // Base — visible everywhere, gentle variation
+    float base = mix(0.4, 0.55, vIsCity);
+    base *= (0.88 + basePulse * 0.12) * dotVariance;
 
     // Pulse adds brightness and size boost for contrast
     float facingDamp = smoothstep(0.0, 0.6, vFacing);
     float pulse = vPulse * facingDamp;
-    float brightness = (base + pulse * (1.5 - base)) * uMaxBrightness;
+    float brightness = mix(base, 1.5, pulse) * uMaxBrightness;
 
     // Alpha: base dots slightly transparent, pulsed dots overdriven
     float alpha = circle.a * mix(base, 1.3, pulse) * edge;
