@@ -66,30 +66,30 @@ const FRAGMENT = `
     float edge = 0.15 + 0.85 * smoothstep(-0.3, 0.4, vFacing);
     vec4 circle = texture2D(uCircleTex, gl_PointCoord);
 
-    // Organic spread — tight groups that flow around the globe
+    // Organic spread — very fine grain flowing around
     vec3 nn = normalize(vPosition);
-    float drift = uTime * 0.04;
-    float warp1 = sin(nn.y * 6.0 + drift * 1.8) * 0.35;
-    float warp2 = cos(nn.x * 5.5 + drift * 1.3) * 0.3;
+    float drift = uTime * 0.12;
+    float warp1 = sin(nn.y * 14.0 + drift * 1.8) * 0.15;
+    float warp2 = cos(nn.x * 13.0 + drift * 1.3) * 0.12;
 
-    float spread1 = sin(nn.x * 6.0 + nn.z * warp1 + drift * 2.2) *
-                    sin(nn.z * 5.5 - nn.y * warp2 + drift * 1.7);
-    float spread2 = sin(nn.y * 7.0 + nn.x * warp2 + drift * 2.0 + warp1) *
-                    sin(nn.x * 5.0 + nn.z * warp1 - drift * 1.5);
-    float spread3 = sin(nn.z * 7.5 + nn.y * warp1 * 1.5 + drift * 2.5) *
-                    sin(nn.y * 6.0 - nn.x * warp2 * 1.2 + drift * 1.9);
-    float spread4 = sin(nn.x * 8.0 - nn.y * warp2 + drift * 2.8) *
-                    sin(nn.z * 6.5 + nn.x * warp1 + drift * 2.1);
+    float spread1 = sin(nn.x * 16.0 + nn.z * warp1 + drift * 2.2) *
+                    sin(nn.z * 15.0 - nn.y * warp2 + drift * 1.7);
+    float spread2 = sin(nn.y * 18.0 + nn.x * warp2 + drift * 2.0 + warp1) *
+                    sin(nn.x * 14.0 + nn.z * warp1 - drift * 1.5);
+    float spread3 = sin(nn.z * 19.0 + nn.y * warp1 * 1.5 + drift * 2.5) *
+                    sin(nn.y * 16.0 - nn.x * warp2 * 1.2 + drift * 1.9);
+    float spread4 = sin(nn.x * 20.0 - nn.y * warp2 + drift * 2.8) *
+                    sin(nn.z * 17.0 + nn.x * warp1 + drift * 2.1);
     float spread = spread1 * 0.3 + spread2 * 0.25 + spread3 * 0.25 + spread4 * 0.2;
 
     // Per-dot tick + global breathing
     float p = dot(nn, vec3(73.0, 137.0, 59.0));
     float tick = sin(uTime * 0.3 + p) * 0.5 + 0.5;
     float basePulse = sin(uTime * 0.25) * 0.5 + 0.5;
-    float dotVariance = 0.75 + spread * 0.18 + tick * 0.07;
+    float dotVariance = 0.82 + spread * 0.12 + tick * 0.06;
 
     // Base — visible everywhere, gentle variation
-    float base = mix(0.4, 0.55, vIsCity);
+    float base = mix(0.55, 0.6, vIsCity);
     base *= (0.88 + basePulse * 0.12) * dotVariance;
 
     // Pulse adds brightness and size boost for contrast
