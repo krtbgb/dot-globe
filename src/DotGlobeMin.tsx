@@ -6,11 +6,11 @@ import { EARTH_NIGHT_BASE64 } from "./earth-night";
 import { buildCircleTexture } from "./utils";
 
 const CONFIG = {
-  dotCount: 3000,
+  dotCount: 2000,
   globeRadius: 7,
   rotationSpeedY: 0.0008,
   cameraDistance: 18,
-  cityDots: 2000,
+  cityDots: 3500,
   luminanceThreshold: 0.08,
 };
 
@@ -89,7 +89,7 @@ const FRAGMENT = `
     float dotVariance = 0.82 + spread * 0.12 + tick * 0.06;
 
     // Base — visible everywhere, gentle variation
-    float base = mix(0.55, 0.6, vIsCity);
+    float base = mix(0.45, 0.65, vIsCity);
     base *= (0.88 + basePulse * 0.12) * dotVariance;
 
     // Pulse adds brightness and size boost for contrast
