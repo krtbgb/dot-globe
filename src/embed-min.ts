@@ -295,10 +295,11 @@ function createDotGlobeMin(options: EmbedMinOptions = {}) {
 
   const animate = () => {
     animId = requestAnimationFrame(animate);
-    const t = clock.getElapsedTime();
+    const dt = clock.getDelta();
+    const t = clock.elapsedTime;
     const pivot = scene.children[0];
     if (pivot && pivot.children[0] instanceof THREE.Points) {
-      pivot.children[0].rotation.y += rotationSpeed;
+      pivot.children[0].rotation.y += rotationSpeed * dt * 60;
     }
     if (material) {
       material.uniforms.uTime.value = t;

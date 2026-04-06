@@ -5,7 +5,7 @@ export interface DotGlobeProps {
   /** Grid step in degrees — smaller = more dots, more detail. Default: 0.9 */
   gridStep?: number;
 
-  /** Base dot size multiplier. Default: 2.0 */
+  /** Base dot size multiplier. Default: 1.0 */
   dotSize?: number;
 
   /** Globe radius in scene units. Default: 7 */
@@ -29,7 +29,7 @@ export interface DotGlobeProps {
   /** Background color as hex number. Default: 0x000000 */
   backgroundColor?: number;
 
-  /** Background opacity (0-1). Set to 0 for fully transparent overlay. Default: 1.0 */
+  /** Background opacity (0-1). Set to 0 for fully transparent overlay. Default: 0 */
   backgroundOpacity?: number;
 
   /** Show atmosphere rim glow. Default: true */
@@ -65,7 +65,7 @@ export const DEFAULT_CONFIG: Required<Omit<DotGlobeProps, 'className' | 'style' 
   luminanceThreshold: 0.08,
   chars: '.',
   backgroundColor: 0x000000,
-  backgroundOpacity: 1.0,
+  backgroundOpacity: 0,
   atmosphere: true,
   atmosphereOpacity: 0.02,
   timeOffset: 12,

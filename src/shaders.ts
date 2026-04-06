@@ -78,14 +78,14 @@ export const PARTICLE_FRAGMENT = `
     float dotVariance = 0.6 + spread * 0.3 + tick * 0.1;
 
     float basePulse = sin(uTime * 0.25) * 0.5 + 0.5;
-    float base = mix(0.2, 0.42 + vLuminance * 0.15, isLand);
+    float base = mix(0.3, 0.52 + vLuminance * 0.15, isLand);
     base *= (0.8 + basePulse * 0.2) * dotVariance;
 
     float glow = vShimmer * 0.7;
     float alpha = circle.a * (base + glow) * edge;
     if (alpha < 0.005) discard;
 
-    float brightness = mix(0.12, 0.3, isLand) * (0.8 + basePulse * 0.2) * dotVariance + vShimmer * 0.7;
+    float brightness = mix(0.2, 0.4, isLand) * (0.8 + basePulse * 0.2) * dotVariance + vShimmer * 0.7;
     gl_FragColor = vec4(vec3(brightness), alpha);
   }
 `;

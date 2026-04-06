@@ -153,9 +153,10 @@ function createDotGlobe(options: EmbedOptions = {}) {
 
   const animate = () => {
     animId = requestAnimationFrame(animate);
-    const t = clock.getElapsedTime() + timeOffset;
+    const dt = clock.getDelta();
+    const t = clock.elapsedTime + timeOffset;
     if (pivot && pivot.children.length > 0) {
-      pivot.children[0].rotation.y += rotationSpeed;
+      pivot.children[0].rotation.y += rotationSpeed * dt * 60;
     }
     if (particleMaterial) {
       particleMaterial.uniforms.uTime.value = t;

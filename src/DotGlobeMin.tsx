@@ -21,8 +21,8 @@ const VERTEX = `
   uniform float uMinBrightness;
   uniform float uMaxBrightness;
   uniform float uPulseSpeed;
-  uniform float uPulseSlots[40];
-  uniform float uPulseTimes[40];
+  uniform float uPulseSlots[120];
+  uniform float uPulseTimes[120];
   attribute float aIndex;
   attribute float aIsCity;
   varying float vFacing;
@@ -64,7 +64,7 @@ const VERTEX = `
     // Transaction pulse check
     float pulseGlow = 0.0;
     float idx = aIndex;
-    for (int i = 0; i < 40; i++) {
+    for (int i = 0; i < 120; i++) {
       if (abs(uPulseSlots[i] - idx) < 0.5) {
         float age = (uTime - uPulseTimes[i]) * uPulseSpeed;
         float fadeIn = clamp(age / 2.0, 0.0, 1.0);
@@ -137,7 +137,7 @@ export interface DotGlobeMinProps {
   pulseFrequency?: number;
   /** Background color as hex number. Default: 0x000000 */
   backgroundColor?: number;
-  /** Background opacity (0-1). Set to 0 for fully transparent. Default: 1.0 */
+  /** Background opacity (0-1). Set to 0 for fully transparent. Default: 0 */
   backgroundOpacity?: number;
   /** Dot color as CSS hex string. Default: "#ffffff" */
   dotColor?: string;
@@ -148,7 +148,7 @@ export interface DotGlobeMinProps {
 }
 
 export function DotGlobeMin(props: DotGlobeMinProps) {
-  const { className, style, width = "100%", height = "100%", nightImageUrl, dotSize = 1.0, minBrightness = 0.35, maxBrightness = 1.0, pulseSpeed = 1.0, pulseFrequency = 1.0, backgroundColor = 0x000000, backgroundOpacity = 1.0, dotColor = "#ffffff", tilt = [0, 0], rotationSpeed = 0.0008 } = props;
+  const { className, style, width = "100%", height = "100%", nightImageUrl, dotSize = 1.0, minBrightness = 0.35, maxBrightness = 1.0, pulseSpeed = 1.0, pulseFrequency = 1.0, backgroundColor = 0x000000, backgroundOpacity = 0, dotColor = "#ffffff", tilt = [0, 0], rotationSpeed = 0.0008 } = props;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -214,8 +214,8 @@ export function DotGlobeMin(props: DotGlobeMinProps) {
 
     let material: THREE.ShaderMaterial | null = null;
     let geometry: THREE.BufferGeometry | null = null;
-    const pulseSlots = new Float32Array(40).fill(-1);
-    const pulseTimes = new Float32Array(40).fill(-100);
+    const pulseSlots = new Float32Array(120).fill(-1);
+    const pulseTimes = new Float32Array(120).fill(-100);
 
     img.onload = () => {
       const offscreen = document.createElement("canvas");
@@ -283,29 +283,36 @@ export function DotGlobeMin(props: DotGlobeMinProps) {
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
+      const dt = clock.getDelta();
+      const t = clock.elapsedTime;
 
       const pivot = scene.children[0];
       if (pivot && pivot.children[0] instanceof THREE.Points) {
-        pivot.children[0].rotation.y += rotationSpeed;
+        pivot.children[0].rotation.y += rotationSpeed * dt * 60;
       }
 
       if (material) {
         material.uniforms.uTime.value = t;
 
-        const interval = (0.3 + Math.random() * 0.5) / pulseFrequency;
+        // pulseFrequency controls how many dots fire per interval
+        // Higher frequency = more dots pulsing simultaneously
+        const baseInterval = 0.3 + Math.random() * 0.5;
+        const pulsesPerBurst = Math.max(1, Math.round(pulseFrequency));
+        const interval = baseInterval / Math.sqrt(pulseFrequency);
         if (t - lastPulse > interval) {
-          let slot = 0, oldestAge = 0;
-          for (let i = 0; i < 40; i++) {
-            const age = t - pulseTimes[i];
-            if (age > oldestAge) { oldestAge = age; slot = i; }
+          for (let b = 0; b < pulsesPerBurst; b++) {
+            let slot = 0, oldestAge = 0;
+            for (let i = 0; i < 120; i++) {
+              const age = t - pulseTimes[i];
+              if (age > oldestAge) { oldestAge = age; slot = i; }
+            }
+            // 70% chance to hit a city dot, 30% any dot
+            const hitCity = Math.random() < 0.7;
+            pulseSlots[slot] = hitCity
+              ? CONFIG.dotCount + Math.floor(Math.random() * CONFIG.cityDots)
+              : Math.floor(Math.random() * CONFIG.dotCount);
+            pulseTimes[slot] = t;
           }
-          // 70% chance to hit a city dot, 30% any dot
-          const hitCity = Math.random() < 0.7;
-          pulseSlots[slot] = hitCity
-            ? CONFIG.dotCount + Math.floor(Math.random() * CONFIG.cityDots)
-            : Math.floor(Math.random() * CONFIG.dotCount);
-          pulseTimes[slot] = t;
           lastPulse = t;
           material.uniforms.uPulseSlots.value = pulseSlots;
           material.uniforms.uPulseTimes.value = pulseTimes;
