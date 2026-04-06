@@ -76,8 +76,7 @@ const VERTEX = `
     }
 
     float facingDamp = smoothstep(-0.3, 0.5, vFacing);
-    // Pulse adds on top of base — smooth blend, never disappears
-    float pulseAdd = pulseGlow * pulseGlow * 2.5 * facingDamp; // squared for eased curve
+    float pulseAdd = pulseGlow * 1.5 * facingDamp;
     vGlow = baseGlow + pulseAdd;
 
     float backBoost = vFacing < 0.0 ? 1.3 : 1.0;
